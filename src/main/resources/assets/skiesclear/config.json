@@ -1,0 +1,15 @@
+{
+  "debug": false,
+  "timezone": "America/Chicago",
+  "storage": {
+    "type": "JSON",
+    "host": "",
+    "port": 27017,
+    "database":  "skiesskins",
+    "username": "admin",
+    "password": ""
+  },
+  "find_equivalent": false,
+  "untradable": true,
+  "ticks_per_update": 20
+}

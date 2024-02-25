@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "${id}",
+  "version": "${version}",
+  "name": "SkiesClear",
+  "description": "",
+  "authors": [],
+  "contact": {
+    "repo": "https://github.com/PokeSkies/SkiesClear"
+  },
+  "license": "All-Rights-Reserved",
+  "environment": "server",
+  "entrypoints": {
+    "main": [
+      "com.pokeskies.skiesclear.SkiesClear"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.14.19",
+    "fabric": "*",
+    "minecraft": "1.20.1"
+  }
+}
