@@ -1,6 +1,5 @@
 package com.pokeskies.skiesclear.commands.subcommands
 
-import com.mojang.brigadier.arguments.BoolArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.LiteralCommandNode

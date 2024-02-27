@@ -1,7 +1,6 @@
 package com.pokeskies.skiesclear.commands
 
 import com.mojang.brigadier.CommandDispatcher
-import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.LiteralCommandNode
 import com.pokeskies.skiesclear.SkiesClear
@@ -15,7 +14,6 @@ import me.lucko.fabric.api.permissions.v0.Permissions
 import net.minecraft.ChatFormatting
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
-import net.minecraft.commands.SharedSuggestionProvider
 import net.minecraft.network.chat.Component
 
 class BaseCommand {
