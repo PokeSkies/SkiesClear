@@ -1,5 +1,5 @@
 # SkiesClear
-<img height="50" src="https://camo.githubusercontent.com/a94064bebbf15dfed1fddf70437ea2ac3521ce55ac85650e35137db9de12979d/68747470733a2f2f692e696d6775722e636f6d2f6331444839564c2e706e67" alt="Requires Fabric Kotlin"/>
+<img width="100" height="50" src="https://i.imgur.com/c1DH9VL.png" alt="Requires Fabric Kotlin"/> <img src="https://img.shields.io/badge/Enviroment-Server-purple" alt="Enviroment Server"> <a href="https://discord.gg/invite/cgBww275Fg" rel="noopener nofollow ugc"><img src="https://img.shields.io/discord/1158447623989116980?color=blue&amp;logo=discord&amp;label=Discord" alt="Discord"></a>
 
 A Fabric (1.20.1) server-sided entity clearing mod! Allows for timed automatic removal of entities, including mobs, items, and even Cobblemon!
 
