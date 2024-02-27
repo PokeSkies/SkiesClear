@@ -1,15 +1,74 @@
 {
   "debug": false,
-  "timezone": "America/Chicago",
-  "storage": {
-    "type": "JSON",
-    "host": "",
-    "port": 27017,
-    "database":  "skiesskins",
-    "username": "admin",
-    "password": ""
-  },
-  "find_equivalent": false,
-  "untradable": true,
-  "ticks_per_update": 20
+  "clears": {
+    "example": {
+      "enabled": true,
+      "interval": 60,
+      "dimensions": [],
+      "messages": {
+        "clear": [
+          "",
+          "<dark_red><b>!!</b> <green>Successfully cleared <white>%clear_amount%</white> entities! Clearing again in <white>%clear_time%</white>",
+          ""
+        ],
+        "warnings":  {
+          "10": [
+            "",
+            "<dark_red><b>!!</b> <red>An entity clear is incoming in <white>%time_remaining%</white>! Most entities will be removed.",
+            ""
+          ],
+          "5": [
+            "",
+            "<dark_red><b>!!</b> <red>An entity clear is incoming in <white>%time_remaining%</white>! Most entities will be removed.",
+            ""
+          ]
+        },
+        "info": [
+          "<red>The Example Clear will be clearing in <white>%time_remaining%</white>!"
+        ]
+      },
+      "sounds": {
+        "clear": {
+          "sound": "minecraft:block.amethyst_block.break",
+          "volume": 0.2,
+          "pitch": 0.5
+        },
+        "warnings": {
+          "10": {
+            "sound": "minecraft:block.note_block.cow_bell",
+            "volume": 0.2,
+            "pitch": 0.5
+          },
+          "5": {
+            "sound": "minecraft:block.note_block.cow_bell",
+            "volume": 0.2,
+            "pitch": 0.5
+          }
+        }
+      },
+      "clearables": {
+        "items": {
+          "enabled": true,
+          "blacklist": [],
+          "whitelist": []
+        },
+        "entities": {
+          "enabled": false,
+          "blacklist": [],
+          "whitelist": []
+        },
+        "cobblemon": {
+          "enabled": true,
+          "blacklist": [
+            "#owned",
+            "#battling",
+            "#shiny",
+            "#legendary",
+            "#ultrabeast"
+          ],
+          "whitelist": []
+        }
+      }
+    }
+  }
 }

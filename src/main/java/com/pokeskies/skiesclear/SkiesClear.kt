@@ -27,6 +27,8 @@ class SkiesClear : ModInitializer {
     companion object {
         lateinit var INSTANCE: SkiesClear
         val LOGGER = LogManager.getLogger("skiesclear")
+
+        var COBBLEMON_PRESENT: Boolean = false
     }
 
     lateinit var configDir: File
@@ -35,7 +37,7 @@ class SkiesClear : ModInitializer {
     var adventure: FabricServerAudiences? = null
     var server: MinecraftServer? = null
 
-    lateinit var shopManager: ClearManager
+    lateinit var clearManager: ClearManager
 
     var gson: Gson = GsonBuilder().disableHtmlEscaping()
         .registerTypeAdapter(ResourceLocation::class.java, Utils.ResourceLocationSerializer())
@@ -49,14 +51,20 @@ class SkiesClear : ModInitializer {
 
         this.configDir = File(FabricLoader.getInstance().configDirectory, "skiesclear")
         this.configManager = ConfigManager(configDir)
+        Utils.printInfo("Config ${ConfigManager.CONFIG}")
 
-        this.shopManager = ClearManager()
+        this.clearManager = ClearManager()
 
         ServerLifecycleEvents.SERVER_STARTING.register(ServerStarting { server ->
             this.adventure = FabricServerAudiences.of(
                 server
             )
             this.server = server
+        })
+        ServerLifecycleEvents.SERVER_STARTED.register(ServerLifecycleEvents.ServerStarted { _ ->
+            if (FabricLoader.getInstance().isModLoaded("cobblemon")) {
+                COBBLEMON_PRESENT = true
+            }
         })
         ServerLifecycleEvents.SERVER_STOPPED.register(ServerStopped { _ ->
             this.adventure = null
@@ -70,7 +78,8 @@ class SkiesClear : ModInitializer {
 
     fun reload() {
         this.configManager.reload()
-        this.shopManager.reload()
+        this.clearManager.reload()
+        Utils.printInfo("Config ${ConfigManager.CONFIG}")
     }
 
     fun <T : Any> loadFile(filename: String, default: T, create: Boolean = false): T {
@@ -91,7 +100,7 @@ class SkiesClear : ModInitializer {
                 }
             }
         } catch (e: Exception) {
-            println("An error has occured while attempting to load file '$filename', with stacktrace:}")
+            Utils.printError("An error has occured while attempting to load file '$filename', with stacktrace:}")
             e.printStackTrace()
         }
         return value

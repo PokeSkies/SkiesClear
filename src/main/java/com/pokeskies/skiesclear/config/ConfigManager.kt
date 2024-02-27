@@ -1,17 +1,11 @@
 package com.pokeskies.skiesclear.config
 
-import com.google.gson.JsonParser
-import com.google.gson.stream.JsonReader
 import com.pokeskies.skiesclear.SkiesClear
+import com.pokeskies.skiesclear.utils.Utils
 import java.io.File
-import java.io.FileInputStream
 import java.io.InputStream
-import java.io.InputStreamReader
 import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
-import java.util.stream.Collectors
 
 class ConfigManager(val configDir: File) {
     companion object {
@@ -39,7 +33,7 @@ class ConfigManager(val configDir: File) {
                 val inputStream: InputStream = classLoader.getResourceAsStream("assets/skiesclear/config.json")
                 Files.copy(inputStream, configFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
             } catch (e: Exception) {
-                SkiesClear.LOGGER.error("Failed to copy the default config file: $e")
+               Utils.printError("Failed to copy the default config file: $e")
             }
         }
     }
