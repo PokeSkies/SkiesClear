@@ -51,7 +51,6 @@ class SkiesClear : ModInitializer {
 
         this.configDir = File(FabricLoader.getInstance().configDirectory, "skiesclear")
         this.configManager = ConfigManager(configDir)
-        Utils.printInfo("Config ${ConfigManager.CONFIG}")
 
         this.clearManager = ClearManager()
 
@@ -79,7 +78,6 @@ class SkiesClear : ModInitializer {
     fun reload() {
         this.configManager.reload()
         this.clearManager.reload()
-        Utils.printInfo("Config ${ConfigManager.CONFIG}")
     }
 
     fun <T : Any> loadFile(filename: String, default: T, create: Boolean = false): T {
