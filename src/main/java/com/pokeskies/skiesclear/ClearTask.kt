@@ -8,6 +8,8 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.Mob
 import net.minecraft.world.entity.player.Player
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -23,6 +25,8 @@ class ClearTask(
             val removeList: MutableList<Entity> = mutableListOf()
             try {
                 for (entity in dimension.allEntities) {
+                    if (entity is Mob && entity.isPersistenceRequired) continue
+
                     if (entity !is Player && clearConfig.clearables != null) {
                         if (clearConfig.clearables.items != null &&
                             clearConfig.clearables.items.enabled &&
