@@ -46,6 +46,16 @@
           }
         }
       },
+      "commands": {
+        "clear": [
+        ],
+        "warnings": {
+          "10": [
+          ],
+          "5": [
+          ]
+        }
+      },
       "clearables": {
         "items": {
           "enabled": true,
