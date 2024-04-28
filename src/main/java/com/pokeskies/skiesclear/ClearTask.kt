@@ -53,6 +53,7 @@ class ClearTask(
             for (command in clearConfig.commands.clear) {
                 if (server.commands.performPrefixedCommand(server.createCommandSourceStack(), command) == 0) {
                     Utils.printError("The post-clearing command \"$command\" failed to execute")
+                    break
                 }
             }
         }
@@ -112,6 +113,7 @@ class ClearTask(
             for (command in warningCommands) {
                 if (server.commands.performPrefixedCommand(server.createCommandSourceStack(), command) == 0) {
                     Utils.printError("The ${timer}s warning command \"$command\" failed to execute")
+                    break
                 }
             }
         }
