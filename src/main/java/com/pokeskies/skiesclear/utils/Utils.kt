@@ -13,9 +13,12 @@ import net.minecraft.resources.ResourceLocation
 import java.lang.reflect.Type
 import java.util.*
 import java.util.function.Function
+import java.util.regex.Pattern
 
 object Utils {
     val miniMessage: MiniMessage = MiniMessage.miniMessage()
+    var wildcardPattern: Pattern = Pattern.compile("^\\w+:\\*\$")
+
 
     fun deserializeText(text: String): Component {
         return SkiesClear.INSTANCE.adventure!!.toNative(miniMessage.deserialize(text))

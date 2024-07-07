@@ -1,6 +1,7 @@
 package com.pokeskies.skiesclear
 
 import com.pokeskies.skiesclear.config.ClearConfig
+import com.pokeskies.skiesclear.config.ConfigManager
 import com.pokeskies.skiesclear.utils.Utils
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer

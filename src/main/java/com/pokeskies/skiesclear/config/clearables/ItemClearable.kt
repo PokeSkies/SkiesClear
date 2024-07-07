@@ -1,8 +1,10 @@
 package com.pokeskies.skiesclear.config.clearables
 
+import com.pokeskies.skiesclear.utils.Utils
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.item.Item
 
@@ -18,33 +20,32 @@ class ItemClearable(
 
     fun shouldClear(entity: Entity): Boolean {
         if (entity !is ItemEntity) return false
-        if (getBlacklistedItems().any { it == entity.item.item }) return false
-        getWhitelistedItems().let { list ->
+        if (blacklistedItems == null) blacklistedItems = createEntitiesList(blacklist)
+        if (blacklistedItems!!.any { it == entity.item.item }) return false
+
+        if (whitelistedItems == null) whitelistedItems = createEntitiesList(whitelist)
+        whitelistedItems!!.let { list ->
             if (list.isNotEmpty() && list.none { it == entity.item.item }) return false
         }
 
         return true
     }
 
-    // Returns a list of items that should be blacklisted, but uses a cache to avoid recalculating the list every time
-    private fun getBlacklistedItems(): List<Item> {
-        if (blacklistedItems != null) return blacklistedItems!!
+    private fun createEntitiesList(list: List<String>): MutableList<Item> {
         val newEntities = mutableListOf<Item>()
-        for (entry in blacklist) {
-            newEntities.add(BuiltInRegistries.ITEM.get(ResourceLocation(entry)))
+        for (entry in list) {
+            if (Utils.wildcardPattern.matcher(entry).matches()) {
+                val namespace = entry.split(":")[0]
+                for (type in BuiltInRegistries.ITEM) {
+                    if (BuiltInRegistries.ITEM.getKey(type).namespace == namespace) {
+                        newEntities.add(type)
+                    }
+                }
+                continue
+            } else {
+                newEntities.add(BuiltInRegistries.ITEM.get(ResourceLocation(entry)))
+            }
         }
-        blacklistedItems = newEntities
-        return newEntities
-    }
-
-    // Returns a list of items that should be whitelisted, but uses a cache to avoid recalculating the list every time
-    private fun getWhitelistedItems(): List<Item> {
-        if (whitelistedItems != null) return whitelistedItems!!
-        val newEntities = mutableListOf<Item>()
-        for (entry in whitelist) {
-            newEntities.add(BuiltInRegistries.ITEM.get(ResourceLocation(entry)))
-        }
-        whitelistedItems = newEntities
         return newEntities
     }
 
