@@ -14,6 +14,7 @@ class ClearConfig(
     val messages: Messages = Messages(),
     val sounds: Sounds = Sounds(),
     val clearables: Clearables? = null,
+    val commands: Commands = Commands(),
 ) {
     class Messages(
         @JsonAdapter(FlexibleListAdaptorFactory::class)
@@ -53,6 +54,16 @@ class ClearConfig(
     ) {
         override fun toString(): String {
             return "Clearables(items=$items, entities=$entities, cobblemon=$cobblemon)"
+        }
+    }
+
+    class Commands(
+        @JsonAdapter(FlexibleListAdaptorFactory::class)
+        val clear: List<String> = emptyList(),
+        val warnings: Map<String, List<String>> = emptyMap(),
+    ) {
+        override fun toString(): String {
+            return "Commands(clear=$clear, warnings=$warnings)"
         }
     }
 

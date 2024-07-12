@@ -54,6 +54,14 @@ class ClearTask(
             }
 
         }
+        if (clearConfig.commands.clear.isNotEmpty()) {
+            for (command in clearConfig.commands.clear) {
+                if (server.commands.performPrefixedCommand(server.createCommandSourceStack(), command) == 0) {
+                    Utils.printError("The post-clearing command \"$command\" failed to execute")
+                    break
+                }
+            }
+        }
         if (broadcast && (clearConfig.messages.clear.isNotEmpty() || clearConfig.sounds.clear != null)) {
             for (player in server.playerList.players) {
                 for (line in clearConfig.messages.clear) {
@@ -74,6 +82,7 @@ class ClearTask(
                 }
             }
         }
+
         return totalCleared.get()
     }
 
@@ -102,6 +111,15 @@ class ClearTask(
                     warningSound.volume,
                     warningSound.pitch
                 )
+            }
+        }
+        val warningCommands: List<String>? = clearConfig.commands.warnings[timer.toString()]
+        if (warningCommands != null) {
+            for (command in warningCommands) {
+                if (server.commands.performPrefixedCommand(server.createCommandSourceStack(), command) == 0) {
+                    Utils.printError("The ${timer}s warning command \"$command\" failed to execute")
+                    break
+                }
             }
         }
         if (timer-- <= 0) {
