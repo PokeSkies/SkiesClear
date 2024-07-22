@@ -5,6 +5,8 @@
       "enabled": true,
       "interval": 60,
       "dimensions": [],
+      "clear_persistent": false,
+      "clear_named": false,
       "messages": {
         "clear": [
           "",

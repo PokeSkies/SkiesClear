@@ -26,7 +26,8 @@ class ClearTask(
             val removeList: MutableList<Entity> = mutableListOf()
             try {
                 for (entity in dimension.allEntities) {
-                    if (entity is Mob && entity.isPersistenceRequired) continue
+                    if (entity is Mob && entity.isPersistenceRequired && !clearConfig.clearPersistent) continue
+                    if (entity is Mob && entity.hasCustomName() && !clearConfig.clearNamed) continue
 
                     if (entity !is Player && clearConfig.clearables != null) {
                         if (clearConfig.clearables.items != null &&

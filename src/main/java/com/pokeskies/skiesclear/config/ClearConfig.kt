@@ -1,6 +1,7 @@
 package com.pokeskies.skiesclear.config
 
 import com.google.gson.annotations.JsonAdapter
+import com.google.gson.annotations.SerializedName
 import com.pokeskies.skiesclear.config.clearables.CobblemonClearable
 import com.pokeskies.skiesclear.config.clearables.EntityClearable
 import com.pokeskies.skiesclear.config.clearables.ItemClearable
@@ -14,6 +15,10 @@ class ClearConfig(
     val messages: Messages = Messages(),
     val sounds: Sounds = Sounds(),
     val clearables: Clearables? = null,
+    @SerializedName("clear_persistent")
+    val clearPersistent: Boolean = false,
+    @SerializedName("clear_named")
+    val clearNamed: Boolean = false,
 ) {
     class Messages(
         @JsonAdapter(FlexibleListAdaptorFactory::class)
