@@ -43,7 +43,7 @@ class ItemClearable(
                 }
                 continue
             } else {
-                newEntities.add(BuiltInRegistries.ITEM.get(ResourceLocation(entry)))
+                newEntities.add(BuiltInRegistries.ITEM.get(ResourceLocation.parse(entry)))
             }
         }
         return newEntities

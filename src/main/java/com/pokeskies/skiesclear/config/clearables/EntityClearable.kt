@@ -40,7 +40,7 @@ class EntityClearable(
                 }
                 continue
             } else {
-                newEntities.add(BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation(entry)))
+                newEntities.add(BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(entry)))
             }
         }
         return newEntities

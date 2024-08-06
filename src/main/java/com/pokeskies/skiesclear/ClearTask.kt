@@ -75,7 +75,7 @@ class ClearTask(
                 }
                 if (clearConfig.sounds.clear != null && clearConfig.sounds.clear.sound.isNotEmpty()) {
                     player.playNotifySound(
-                        SoundEvent.createVariableRangeEvent(ResourceLocation(clearConfig.sounds.clear.sound)),
+                        SoundEvent.createVariableRangeEvent(ResourceLocation.parse(clearConfig.sounds.clear.sound)),
                         SoundSource.MASTER,
                         clearConfig.sounds.clear.volume,
                         clearConfig.sounds.clear.pitch
@@ -106,7 +106,7 @@ class ClearTask(
         if (warningSound != null && warningSound.sound.isNotEmpty()) {
             for (player in server.playerList.players) {
                 player.playNotifySound(
-                    SoundEvent.createVariableRangeEvent(ResourceLocation(warningSound.sound)),
+                    SoundEvent.createVariableRangeEvent(ResourceLocation.parse(warningSound.sound)),
                     SoundSource.MASTER,
                     warningSound.volume,
                     warningSound.pitch

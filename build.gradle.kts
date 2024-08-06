@@ -1,8 +1,8 @@
 @file:Suppress("UnstableApiUsage")
 
 plugins {
-    id("org.jetbrains.kotlin.jvm").version("1.8.10")
-    id("quiet-fabric-loom") version "1.4-SNAPSHOT"
+    id("org.jetbrains.kotlin.jvm").version("2.0.0")
+    id("quiet-fabric-loom") version "1.7-SNAPSHOT"
 }
 
 val modId = project.properties["mod_id"].toString()
@@ -51,19 +51,19 @@ dependencies {
     minecraft("com.mojang:minecraft:$minecraftVersion")
     mappings(loom.layered {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-$minecraftVersion:2023.09.03@zip")
+        parchment("org.parchmentmc.data:parchment-$minecraftVersion:2024.07.28@zip")
     })
     modImplementation("net.fabricmc:fabric-loader:${project.properties["loader_version"].toString()}")
     modImplementation("net.fabricmc:fabric-language-kotlin:${project.properties["fabric_kotlin_version"].toString()}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${project.properties["fabric_version"].toString()}")
 
-    modImplementation("com.cobblemon:fabric:1.4.1+1.20.1")
+    modImplementation("com.cobblemon:fabric:1.6.0+1.21-SNAPSHOT")
 
     // Adventure Text!
-    modImplementation(include("net.kyori:adventure-platform-fabric:5.9.0")!!)
+    modImplementation(include("net.kyori:adventure-platform-fabric:5.14.1")!!)
 
     // PermissionsAPI
-    modImplementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
+    modImplementation("me.lucko:fabric-permissions-api:0.3.1")
 
     modImplementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 }
@@ -86,12 +86,12 @@ tasks.remapJar {
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
-    options.release.set(17)
+    options.release.set(21)
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
     withSourcesJar()
 }
 
