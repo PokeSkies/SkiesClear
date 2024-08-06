@@ -21,7 +21,9 @@ class ClearTask(
     private var timer = clearConfig.interval
 
     fun runClear(server: MinecraftServer, broadcast: Boolean): Int {
-        val totalCleared = AtomicInteger()
+        val itemsCleared = AtomicInteger()
+        val pokemonCleared = AtomicInteger()
+        val entitiesCleared = AtomicInteger()
         for (dimension in getDimensions(server)) {
             val removeList: MutableList<Entity> = mutableListOf()
             try {
@@ -34,20 +36,22 @@ class ClearTask(
                             clearConfig.clearables.items.enabled &&
                             clearConfig.clearables.items.shouldClear(entity)) {
                             removeList.add(entity)
+                            itemsCleared.getAndIncrement()
                         } else if (clearConfig.clearables.cobblemon != null &&
                             clearConfig.clearables.cobblemon.enabled &&
                             clearConfig.clearables.cobblemon.shouldClear(entity)) {
                             removeList.add(entity)
+                            pokemonCleared.getAndIncrement()
                         } else if (clearConfig.clearables.entities != null &&
                             clearConfig.clearables.entities.enabled &&
                             clearConfig.clearables.entities.shouldClear(entity)) {
                             removeList.add(entity)
+                            entitiesCleared.getAndIncrement()
                         }
                     }
                 }
                 for (entity in removeList) {
                     entity.remove(Entity.RemovalReason.KILLED)
-                    totalCleared.getAndIncrement()
                 }
             } catch (exception: Exception) {
                 Utils.printError("An exception was thrown while attempting to clear entities: + $exception")
@@ -55,13 +59,17 @@ class ClearTask(
             }
 
         }
+        val total = itemsCleared.get() + pokemonCleared.get() + entitiesCleared.get()
         if (broadcast && (clearConfig.messages.clear.isNotEmpty() || clearConfig.sounds.clear != null)) {
             for (player in server.playerList.players) {
                 for (line in clearConfig.messages.clear) {
                     player.sendMessage(
                         Utils.deserializeText(
                             line.replace("%clear_time%".toRegex(), Utils.getFormattedTime(clearConfig.interval.toLong()))
-                                .replace("%clear_amount%".toRegex(), totalCleared.toString())
+                                .replace("%clear_amount%".toRegex(), total.toString())
+                                .replace("%clear_amount_items%".toRegex(), itemsCleared.toString())
+                                .replace("%clear_amount_pokemon%".toRegex(), pokemonCleared.toString())
+                                .replace("%clear_amount_entities%".toRegex(), entitiesCleared.toString())
                         )
                     )
                 }
@@ -75,7 +83,7 @@ class ClearTask(
                 }
             }
         }
-        return totalCleared.get()
+        return total
     }
 
     fun tick(server: MinecraftServer) {
