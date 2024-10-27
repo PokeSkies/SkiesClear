@@ -16,7 +16,7 @@ More information on configuration can be found on the [Wiki](https://github.com/
   - Cobblemon Pokemon (whitelists and blacklists, with optional flags like shiny, legendary, and aspects)
 
 ## Installation
-1. Download the latest version of the mod from COMING SOON.
+1. Download the latest version of the mod from [Modrinth](https://modrinth.com/mod/skiesclear).
 2. Download all required dependencies:
    - [Fabric Language Kotlin](https://modrinth.com/mod/fabric-language-kotlin) 
    - [Fabric Permissions API](https://github.com/PokeSkies/fabric-permissions-api)
