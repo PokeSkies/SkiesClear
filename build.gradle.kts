@@ -51,7 +51,8 @@ dependencies {
     minecraft("com.mojang:minecraft:$minecraftVersion")
     mappings(loom.layered {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-$minecraftVersion:${project.properties["parchment_version"]}")
+        // TODO: Fix hardcoded minecraft version once Parchment updates
+        parchment("org.parchmentmc.data:parchment-1.21:${project.properties["parchment_version"]}")
     })
     modImplementation("net.fabricmc:fabric-loader:${project.properties["loader_version"].toString()}")
     modImplementation("net.fabricmc:fabric-language-kotlin:${project.properties["fabric_kotlin_version"].toString()}")
@@ -60,7 +61,7 @@ dependencies {
     modImplementation("com.cobblemon:fabric:1.6.0+1.21-SNAPSHOT")
 
     // Adventure Text!
-    modImplementation(include("net.kyori:adventure-platform-fabric:5.14.1")!!)
+    modImplementation(include("net.kyori:adventure-platform-fabric:5.14.2")!!)
 
     // PermissionsAPI
     modImplementation("me.lucko:fabric-permissions-api:0.3.1")
