@@ -16,6 +16,8 @@ object CobblemonAdaptor {
             if (pokemon.shiny && clearable.blacklist.contains("#shiny")) return false
             if (pokemon.isLegendary() && clearable.blacklist.contains("#legendary")) return false
             if (pokemon.isUltraBeast() && clearable.blacklist.contains("#ultrabeast")) return false
+            if (entity.isBusy && clearable.blacklist.contains("#busy")) return false
+            if (entity.isUncatchable() && clearable.blacklist.contains("#uncatchable")) return false
 
             // Species matching
             if (clearable.blacklist.stream().anyMatch { species: String ->
@@ -42,6 +44,8 @@ object CobblemonAdaptor {
             if (pokemon.shiny && clearable.whitelist.contains("#shiny")) return true
             if (pokemon.isLegendary() && clearable.whitelist.contains("#legendary")) return true
             if (pokemon.isUltraBeast() && clearable.whitelist.contains("#ultrabeast")) return true
+            if (entity.isBusy && clearable.blacklist.contains("#busy")) return true
+            if (entity.isUncatchable() && clearable.blacklist.contains("#uncatchable")) return true
 
             // Species matching
             if (clearable.whitelist.stream().anyMatch { species: String ->
