@@ -16,8 +16,11 @@
     ]
   },
   "depends": {
-    "fabricloader": ">=0.15.11",
+    "java": ">=21",
+    "minecraft": ">=1.21.1",
+    "fabricloader": ">=0.16.0",
     "fabric": "*",
-    "minecraft": "1.21"
+    "fabric-language-kotlin": ">=1.11.0",
+    "fabric-permissions-api-v0": "*"
   }
 }
