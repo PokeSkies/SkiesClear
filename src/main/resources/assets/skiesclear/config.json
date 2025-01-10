@@ -7,6 +7,7 @@
       "dimensions": [],
       "clear_persistent": false,
       "clear_named": false,
+      "inform_dimensions_only": true,
       "messages": {
         "clear": [
           "",

@@ -1,15 +1,14 @@
 package com.pokeskies.skiesclear
 
 import com.pokeskies.skiesclear.config.ClearConfig
-import com.pokeskies.skiesclear.config.ConfigManager
 import com.pokeskies.skiesclear.utils.Utils
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.Mob
 import net.minecraft.world.entity.player.Player
 import java.util.concurrent.atomic.AtomicInteger
@@ -61,7 +60,7 @@ class ClearTask(
         }
         val total = itemsCleared.get() + pokemonCleared.get() + entitiesCleared.get()
         if (broadcast && (clearConfig.messages.clear.isNotEmpty() || clearConfig.sounds.clear != null)) {
-            for (player in server.playerList.players) {
+            for (player in server.playerList.players.filter { shouldInform(it) }) {
                 for (line in clearConfig.messages.clear) {
                     player.sendMessage(
                         Utils.deserializeText(
@@ -89,7 +88,7 @@ class ClearTask(
     fun tick(server: MinecraftServer) {
         val warningMessage: List<String>? = clearConfig.messages.warnings[timer.toString()]
         if (warningMessage != null) {
-            for (player in server.playerList.players) {
+            for (player in server.playerList.players.filter { shouldInform(it) }) {
                 for (line in warningMessage) {
                     player.sendMessage(
                         Utils.deserializeText(
@@ -104,7 +103,7 @@ class ClearTask(
         }
         val warningSound: ClearConfig.Sounds.SoundSettings? = clearConfig.sounds.warnings[timer.toString()]
         if (warningSound != null && warningSound.sound.isNotEmpty()) {
-            for (player in server.playerList.players) {
+            for (player in server.playerList.players.filter { shouldInform(it) }) {
                 player.playNotifySound(
                     SoundEvent.createVariableRangeEvent(ResourceLocation.parse(warningSound.sound)),
                     SoundSource.MASTER,
@@ -130,6 +129,11 @@ class ClearTask(
         if (newDimensions.isEmpty()) newDimensions = server.allLevels.toMutableList()
         dimensions = newDimensions
         return newDimensions
+    }
+
+    private fun shouldInform(player: ServerPlayer): Boolean {
+        return !clearConfig.informDimensionsOnly || clearConfig.dimensions.isEmpty() ||
+            player.level().dimension().location().toString() in clearConfig.dimensions
     }
 
     fun getTimer(): Int {

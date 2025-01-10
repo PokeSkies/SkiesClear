@@ -19,6 +19,8 @@ class ClearConfig(
     val clearPersistent: Boolean = false,
     @SerializedName("clear_named")
     val clearNamed: Boolean = false,
+    @SerializedName("inform_dimensions_only")
+    val informDimensionsOnly: Boolean = true
 ) {
     class Messages(
         @JsonAdapter(FlexibleListAdaptorFactory::class)
