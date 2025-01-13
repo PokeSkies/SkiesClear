@@ -5,6 +5,10 @@ import com.pokeskies.skiesclear.config.clearables.CobblemonClearable
 import net.minecraft.world.entity.Entity
 
 object CobblemonAdaptor {
+    fun isEntityType(entity: Entity): Boolean {
+        return entity is PokemonEntity
+    }
+
     fun shouldClearEntity(clearable: CobblemonClearable, entity: Entity): Boolean {
         if (entity !is PokemonEntity) return false
         val pokemon = entity.pokemon

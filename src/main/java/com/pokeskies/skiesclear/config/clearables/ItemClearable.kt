@@ -4,7 +4,6 @@ import com.pokeskies.skiesclear.utils.Utils
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.item.Item
 
@@ -17,6 +16,11 @@ class ItemClearable(
     private var blacklistedItems: List<Item>? = null
     @Transient
     private var whitelistedItems: List<Item>? = null
+
+    // Confirms if the passed entity is the correct type for this clearable
+    fun isEntityType(entity: Entity): Boolean {
+        return entity is ItemEntity
+    }
 
     fun shouldClear(entity: Entity): Boolean {
         if (entity !is ItemEntity) return false

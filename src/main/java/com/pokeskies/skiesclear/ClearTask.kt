@@ -33,19 +33,25 @@ class ClearTask(
                     if (entity !is Player && clearConfig.clearables != null) {
                         if (clearConfig.clearables.items != null &&
                             clearConfig.clearables.items.enabled &&
-                            clearConfig.clearables.items.shouldClear(entity)) {
-                            removeList.add(entity)
-                            itemsCleared.getAndIncrement()
+                            clearConfig.clearables.items.isEntityType(entity)) {
+                            if (clearConfig.clearables.items.shouldClear(entity)) {
+                                removeList.add(entity)
+                                itemsCleared.getAndIncrement()
+                            }
                         } else if (clearConfig.clearables.cobblemon != null &&
                             clearConfig.clearables.cobblemon.enabled &&
-                            clearConfig.clearables.cobblemon.shouldClear(entity)) {
-                            removeList.add(entity)
-                            pokemonCleared.getAndIncrement()
+                            clearConfig.clearables.cobblemon.isEntityType(entity)) {
+                            if (clearConfig.clearables.cobblemon.shouldClear(entity)) {
+                                removeList.add(entity)
+                                pokemonCleared.getAndIncrement()
+                            }
                         } else if (clearConfig.clearables.entities != null &&
                             clearConfig.clearables.entities.enabled &&
-                            clearConfig.clearables.entities.shouldClear(entity)) {
-                            removeList.add(entity)
-                            entitiesCleared.getAndIncrement()
+                            clearConfig.clearables.entities.isEntityType(entity)) {
+                            if (clearConfig.clearables.entities.shouldClear(entity)) {
+                                removeList.add(entity)
+                                entitiesCleared.getAndIncrement()
+                            }
                         }
                     }
                 }

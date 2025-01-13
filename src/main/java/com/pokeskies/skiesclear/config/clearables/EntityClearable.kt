@@ -5,6 +5,7 @@ import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.item.ItemEntity
 
 class EntityClearable(
     val enabled: Boolean = true,
@@ -15,6 +16,11 @@ class EntityClearable(
     private var blacklistedEntities: MutableList<EntityType<*>>? = null
     @Transient
     private var whitelistedEntities: MutableList<EntityType<*>>? = null
+
+    // Confirms if the passed entity is the correct type for this clearable
+    fun isEntityType(entity: Entity): Boolean {
+        return true
+    }
 
     fun shouldClear(entity: Entity): Boolean {
         if (blacklistedEntities == null) blacklistedEntities = createEntitiesList(blacklist)
