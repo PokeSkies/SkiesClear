@@ -3,6 +3,7 @@ package com.pokeskies.skiesclear.config.clearables
 import com.pokeskies.skiesclear.SkiesClear
 import com.pokeskies.skiesclear.utils.CobblemonAdaptor
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.item.ItemEntity
 
 class CobblemonClearable(
     val enabled: Boolean = true,
@@ -13,6 +14,11 @@ class CobblemonClearable(
     private var blacklistedAspects: List<String>? = null
     @Transient
     private var whitelistedAspects: List<String>? = null
+
+    // Confirms if the passed entity is the correct type for this clearable
+    fun isEntityType(entity: Entity): Boolean {
+        return if (SkiesClear.COBBLEMON_PRESENT) CobblemonAdaptor.isEntityType(entity) else false
+    }
 
     fun shouldClear(entity: Entity): Boolean {
         return if (SkiesClear.COBBLEMON_PRESENT) CobblemonAdaptor.shouldClearEntity(this, entity) else false

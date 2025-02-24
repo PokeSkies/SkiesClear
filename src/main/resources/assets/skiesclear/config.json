@@ -7,6 +7,7 @@
       "dimensions": [],
       "clear_persistent": false,
       "clear_named": false,
+      "inform_dimensions_only": true,
       "messages": {
         "clear": [
           "",
@@ -56,7 +57,35 @@
         },
         "entities": {
           "enabled": false,
-          "blacklist": [],
+          "blacklist": [
+            "minecraft:area_effect_cloud",
+            "minecraft:armor_stand",
+            "minecraft:boat",
+            "minecraft:block_display",
+            "minecraft:chest_boat",
+            "minecraft:chest_minecart",
+            "minecraft:command_block_minecart",
+            "minecraft:furnace_minecart",
+            "minecraft:glow_item_frame",
+            "minecraft:hopper_minecart",
+            "minecraft:interaction",
+            "minecraft:item_display",
+            "minecraft:item_frame",
+            "minecraft:leash_knot",
+            "minecraft:lightning_bolt",
+            "minecraft:marker",
+            "minecraft:ominous_item_spawner",
+            "minecraft:painting",
+            "minecraft:spawner_minecart",
+            "minecraft:text_display",
+            "minecraft:tnt_minecart",
+            "cobblemon:npc",
+            "cobblemon:generic_bedrock",
+            "cobblemon:poke_bobber",
+            "cobblemon:empty_pokeball",
+            "cobblemon:boat",
+            "cobblemon:chest_boat"
+          ],
           "whitelist": []
         },
         "cobblemon": {
