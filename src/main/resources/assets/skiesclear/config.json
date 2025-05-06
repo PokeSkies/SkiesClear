@@ -58,6 +58,7 @@
         "entities": {
           "enabled": false,
           "blacklist": [
+            "minecraft:item",
             "minecraft:area_effect_cloud",
             "minecraft:armor_stand",
             "minecraft:boat",
@@ -79,6 +80,7 @@
             "minecraft:spawner_minecart",
             "minecraft:text_display",
             "minecraft:tnt_minecart",
+            "cobblemon:pokemon",
             "cobblemon:npc",
             "cobblemon:generic_bedrock",
             "cobblemon:poke_bobber",

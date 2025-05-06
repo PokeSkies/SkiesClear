@@ -1,59 +1,127 @@
 package com.pokeskies.skiesclear.config.clearables
 
-import com.pokeskies.skiesclear.SkiesClear
-import com.pokeskies.skiesclear.utils.CobblemonAdaptor
+import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
+import com.pokeskies.skiesclear.config.ClearConfig
+import com.pokeskies.skiesclear.utils.Utils
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.item.ItemEntity
+import net.minecraft.world.level.entity.EntityTypeTest
 
 class CobblemonClearable(
-    val enabled: Boolean = true,
-    var blacklist: List<String> = emptyList(),
-    var whitelist: List<String> = emptyList()
-) {
+    enabled: Boolean = true,
+    blacklist: List<String> = emptyList(),
+    whitelist: List<String> = emptyList()
+): Clearable<PokemonEntity>(enabled, blacklist, whitelist) {
     @Transient
-    private var blacklistedAspects: List<String>? = null
+    private lateinit var blacklistedAspects: List<String>
     @Transient
-    private var whitelistedAspects: List<String>? = null
+    private lateinit var whitelistedAspects: List<String>
 
-    // Confirms if the passed entity is the correct type for this clearable
-    fun isEntityType(entity: Entity): Boolean {
-        return if (SkiesClear.COBBLEMON_PRESENT) CobblemonAdaptor.isEntityType(entity) else false
+    override fun initialize() {
+        blacklistedAspects = generateAspects(blacklist)
+        whitelistedAspects = generateAspects(whitelist)
     }
 
-    fun shouldClear(entity: Entity): Boolean {
-        return if (SkiesClear.COBBLEMON_PRESENT) CobblemonAdaptor.shouldClearEntity(this, entity) else false
+    override fun getResourceLocation(entity: PokemonEntity): ResourceLocation {
+        return entity.pokemon.species.resourceIdentifier
     }
 
-    // Returns a list of aspects that should be blacklisted, but uses a cache to avoid recalculating the list every time
-    fun getBlacklistedAspects(): List<String> {
-        if (blacklistedAspects != null) return blacklistedAspects!!
+    override fun clearEntities(clearConfig: ClearConfig, levels: List<ServerLevel>): Int {
+        if (!enabled) return 0
+        var removalCount = 0
+        for (level in levels) {
+            try {
+                val entities = level.getEntities(EntityTypeTest.forClass(PokemonEntity::class.java)) { true }.filter { entity ->
+                    if (entity.isPersistenceRequired && !clearConfig.clearPersistent) return@filter false
+                    if (entity.hasCustomName() && !clearConfig.clearNamed) return@filter false
+                    return@filter shouldClear(entity)
+                }
+                entities.forEach { entity -> entity.remove(Entity.RemovalReason.KILLED) }
+                removalCount += entities.size
+            } catch (exception: Exception) {
+                Utils.printError("An exception was thrown while attempting to clear entities: + $exception")
+                exception.printStackTrace()
+            }
+        }
+        return removalCount
+    }
+
+    override fun isBlacklisted(entity: PokemonEntity, id: ResourceLocation): Boolean {
+        val pokemon = entity.pokemon
+        if (pokemon.isPlayerOwned() && blacklist.contains("#owned")) return true
+        if (entity.isBattling && blacklist.contains("#battling")) return true
+        if (pokemon.shiny && blacklist.contains("#shiny")) return true
+        if (pokemon.isLegendary() && blacklist.contains("#legendary")) return true
+        if (pokemon.isUltraBeast() && blacklist.contains("#ultrabeast")) return true
+        if (entity.isBusy && blacklist.contains("#busy")) return true
+        if (entity.isUncatchable() && blacklist.contains("#uncatchable")) return true
+
+        // Species matching
+        if (blacklist.stream().anyMatch { species: String ->
+                id.toString().equals(species, ignoreCase = true)
+            }) return true
+
+        // Aspect matching
+        if (blacklistedAspects.isNotEmpty()) {
+            if (pokemon.aspects.isNotEmpty()) {
+                if (pokemon.aspects.stream().anyMatch { pokemonAspect: String ->
+                        blacklistedAspects.contains(
+                            pokemonAspect
+                        )
+                    }) return true
+            }
+        }
+
+        return false
+    }
+
+    override fun isWhitelisted(entity: PokemonEntity, id: ResourceLocation): Boolean {
+        val pokemon = entity.pokemon
+        if (pokemon.isPlayerOwned() && whitelist.contains("#owned")) return true
+        if (entity.isBattling && whitelist.contains("#battling")) return true
+        if (pokemon.shiny && whitelist.contains("#shiny")) return true
+        if (pokemon.isLegendary() && whitelist.contains("#legendary")) return true
+        if (pokemon.isUltraBeast() && whitelist.contains("#ultrabeast")) return true
+        if (entity.isBusy && blacklist.contains("#busy")) return true
+        if (entity.isUncatchable() && blacklist.contains("#uncatchable")) return true
+
+        // Species matching
+        if (whitelist.stream().anyMatch { species: String ->
+                pokemon.species.resourceIdentifier.toString().equals(species, ignoreCase = true)
+            }) return true
+
+        // Aspect matching
+        if (whitelistedAspects.isNotEmpty()) {
+            if (pokemon.aspects.isNotEmpty()) {
+                if (pokemon.aspects.stream().anyMatch { pokemonAspect: String ->
+                        whitelistedAspects.contains(
+                            pokemonAspect
+                        )
+                    }) return true
+            }
+        }
+        return false
+    }
+
+    override fun getPlaceholder(): String {
+        return "%clear_amount_pokemon%"
+    }
+
+    private fun generateAspects(list: List<String>): List<String> {
         val newAspects = mutableListOf<String>()
-        for (entry in blacklist) {
+        for (entry in list) {
             if (entry.startsWith("#aspect=", true)) {
                 // split the entry string at the FIRST = occurrence
                 val split = entry.split("=", ignoreCase = true, limit = 2)
                 if (split.size == 2) newAspects.add(split[1])
             }
         }
-        blacklistedAspects = newAspects
-        return newAspects
-    }
-
-    fun getWhitelistedAspects(): List<String> {
-        if (whitelistedAspects != null) return whitelistedAspects!!
-        val newAspects = mutableListOf<String>()
-        for (entry in whitelist) {
-            if (entry.startsWith("#aspect=", true)) {
-                // split the entry string at the FIRST = occurrence
-                val split = entry.split("=", ignoreCase = true, limit = 2)
-                if (split.size == 2) newAspects.add(split[1])
-            }
-        }
-        whitelistedAspects = newAspects
         return newAspects
     }
 
     override fun toString(): String {
-        return "CobblemonClearable(enabled=$enabled, blacklist=$blacklist, whitelist=$whitelist, blacklistedAspects=$blacklistedAspects, whitelistedAspects=$whitelistedAspects)"
+        return "CobblemonClearable(enabled=$enabled, blacklist=$blacklist, whitelist=$whitelist, " +
+                "blacklistedAspects=$blacklistedAspects, whitelistedAspects=$whitelistedAspects)"
     }
 }

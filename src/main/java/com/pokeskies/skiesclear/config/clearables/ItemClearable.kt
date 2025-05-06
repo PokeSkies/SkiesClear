@@ -1,59 +1,47 @@
 package com.pokeskies.skiesclear.config.clearables
 
+import com.pokeskies.skiesclear.config.ClearConfig
 import com.pokeskies.skiesclear.utils.Utils
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.item.ItemEntity
-import net.minecraft.world.item.Item
+import net.minecraft.world.level.entity.EntityTypeTest
 
 class ItemClearable(
-    val enabled: Boolean = true,
-    var blacklist: List<String> = emptyList(),
-    var whitelist: List<String> = emptyList()
-) {
-    @Transient
-    private var blacklistedItems: List<Item>? = null
-    @Transient
-    private var whitelistedItems: List<Item>? = null
-
-    // Confirms if the passed entity is the correct type for this clearable
-    fun isEntityType(entity: Entity): Boolean {
-        return entity is ItemEntity
+    enabled: Boolean = false,
+    blacklist: List<String> = emptyList(),
+    whitelist: List<String> = emptyList()
+): Clearable<ItemEntity>(enabled, blacklist, whitelist) {
+    override fun getResourceLocation(entity: ItemEntity): ResourceLocation {
+        return BuiltInRegistries.ITEM.getKey(entity.item.item)
     }
 
-    fun shouldClear(entity: Entity): Boolean {
-        if (entity !is ItemEntity) return false
-        if (blacklistedItems == null) blacklistedItems = createEntitiesList(blacklist)
-        if (blacklistedItems!!.any { it == entity.item.item }) return false
-
-        if (whitelistedItems == null) whitelistedItems = createEntitiesList(whitelist)
-        whitelistedItems!!.let { list ->
-            if (list.isNotEmpty() && list.none { it == entity.item.item }) return false
-        }
-
-        return true
-    }
-
-    private fun createEntitiesList(list: List<String>): MutableList<Item> {
-        val newEntities = mutableListOf<Item>()
-        for (entry in list) {
-            if (Utils.wildcardPattern.matcher(entry).matches()) {
-                val namespace = entry.split(":")[0]
-                for (type in BuiltInRegistries.ITEM) {
-                    if (BuiltInRegistries.ITEM.getKey(type).namespace == namespace) {
-                        newEntities.add(type)
-                    }
+    override fun clearEntities(clearConfig: ClearConfig, levels: List<ServerLevel>): Int {
+        if (!enabled) return 0
+        var removalCount = 0
+        for (level in levels) {
+            try {
+                val entities = level.getEntities(EntityTypeTest.forClass(ItemEntity::class.java)) { true }.filter { entity ->
+                    if (entity.hasCustomName() && !clearConfig.clearNamed) return@filter false
+                    return@filter shouldClear(entity)
                 }
-                continue
-            } else {
-                newEntities.add(BuiltInRegistries.ITEM.get(ResourceLocation.parse(entry)))
+                entities.forEach { entity -> entity.remove(Entity.RemovalReason.KILLED) }
+                removalCount += entities.size
+            } catch (exception: Exception) {
+                Utils.printError("An exception was thrown while attempting to clear entities: + $exception")
+                exception.printStackTrace()
             }
         }
-        return newEntities
+        return removalCount
+    }
+
+    override fun getPlaceholder(): String {
+        return "%clear_amount_items%"
     }
 
     override fun toString(): String {
-        return "ItemClearable(enabled=$enabled, blacklist=$blacklist, whitelist=$whitelist, blacklistedItems=$blacklistedItems, whitelistedItems=$whitelistedItems)"
+        return "ItemClearable(enabled=$enabled, blacklist=$blacklist, whitelist=$whitelist)"
     }
 }

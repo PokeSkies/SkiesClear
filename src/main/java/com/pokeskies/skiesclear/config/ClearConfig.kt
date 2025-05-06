@@ -2,9 +2,7 @@ package com.pokeskies.skiesclear.config
 
 import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
-import com.pokeskies.skiesclear.config.clearables.CobblemonClearable
-import com.pokeskies.skiesclear.config.clearables.EntityClearable
-import com.pokeskies.skiesclear.config.clearables.ItemClearable
+import com.pokeskies.skiesclear.config.clearables.Clearable
 import com.pokeskies.skiesclear.utils.FlexibleListAdaptorFactory
 
 class ClearConfig(
@@ -14,7 +12,8 @@ class ClearConfig(
     val dimensions: List<String> = emptyList(),
     val messages: Messages = Messages(),
     val sounds: Sounds = Sounds(),
-    val clearables: Clearables? = null,
+    @JsonAdapter(Clearable.MapDeserializer::class)
+    val clearables: Map<String, Clearable<*>> = emptyMap(),
     @SerializedName("clear_persistent")
     val clearPersistent: Boolean = false,
     @SerializedName("clear_named")
@@ -50,16 +49,6 @@ class ClearConfig(
 
         override fun toString(): String {
             return "Sounds(clear=$clear, warnings=$warnings)"
-        }
-    }
-
-    class Clearables(
-        val items: ItemClearable? = null,
-        val entities: EntityClearable? = null,
-        val cobblemon: CobblemonClearable? = null,
-    ) {
-        override fun toString(): String {
-            return "Clearables(items=$items, entities=$entities, cobblemon=$cobblemon)"
         }
     }
 

@@ -22,7 +22,14 @@ class ClearManager {
     fun reload() {
         clearTasks.clear()
         for ((id, clearConfig) in ConfigManager.CONFIG.clears) {
-            if (clearConfig.enabled) clearTasks[id] = ClearTask(clearConfig)
+            if (clearConfig.enabled) {
+                val task = ClearTask(clearConfig)
+                task.clearConfig.clearables.forEach { (id, clearable) ->
+                    clearable.initialize()
+                }
+                clearTasks[id] = task
+            }
+
         }
     }
 

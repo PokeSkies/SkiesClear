@@ -1,6 +1,7 @@
 package com.pokeskies.skiesclear
 
 import com.pokeskies.skiesclear.config.ClearConfig
+import com.pokeskies.skiesclear.config.clearables.Clearable
 import com.pokeskies.skiesclear.utils.Utils
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
@@ -8,75 +9,24 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundSource
-import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.Mob
-import net.minecraft.world.entity.player.Player
-import java.util.concurrent.atomic.AtomicInteger
 
 class ClearTask(
-    private val clearConfig: ClearConfig
+    val clearConfig: ClearConfig
 ) {
     private var dimensions: List<ServerLevel>? = null
     private var timer = clearConfig.interval
 
     fun runClear(server: MinecraftServer, broadcast: Boolean): Int {
-        val itemsCleared = AtomicInteger()
-        val pokemonCleared = AtomicInteger()
-        val entitiesCleared = AtomicInteger()
-        for (dimension in getDimensions(server)) {
-            val removeList: MutableList<Entity> = mutableListOf()
-            try {
-                for (entity in dimension.allEntities) {
-                    if (entity is Mob && entity.isPersistenceRequired && !clearConfig.clearPersistent) continue
-                    if (entity is Mob && entity.hasCustomName() && !clearConfig.clearNamed) continue
+        val levels = getLevels(server)
+        val totals = clearConfig.clearables.map { (id, clearable) ->
+            clearable to clearable.clearEntities(clearConfig, levels)
+        }.toMap()
 
-                    if (entity !is Player && clearConfig.clearables != null) {
-                        if (clearConfig.clearables.items != null &&
-                            clearConfig.clearables.items.enabled &&
-                            clearConfig.clearables.items.isEntityType(entity)) {
-                            if (clearConfig.clearables.items.shouldClear(entity)) {
-                                removeList.add(entity)
-                                itemsCleared.getAndIncrement()
-                            }
-                        } else if (clearConfig.clearables.cobblemon != null &&
-                            clearConfig.clearables.cobblemon.enabled &&
-                            clearConfig.clearables.cobblemon.isEntityType(entity)) {
-                            if (clearConfig.clearables.cobblemon.shouldClear(entity)) {
-                                removeList.add(entity)
-                                pokemonCleared.getAndIncrement()
-                            }
-                        } else if (clearConfig.clearables.entities != null &&
-                            clearConfig.clearables.entities.enabled &&
-                            clearConfig.clearables.entities.isEntityType(entity)) {
-                            if (clearConfig.clearables.entities.shouldClear(entity)) {
-                                removeList.add(entity)
-                                entitiesCleared.getAndIncrement()
-                            }
-                        }
-                    }
-                }
-                for (entity in removeList) {
-                    entity.remove(Entity.RemovalReason.KILLED)
-                }
-            } catch (exception: Exception) {
-                Utils.printError("An exception was thrown while attempting to clear entities: + $exception")
-                exception.printStackTrace()
-            }
-
-        }
-        val total = itemsCleared.get() + pokemonCleared.get() + entitiesCleared.get()
+        val total = totals.values.sum()
         if (broadcast && (clearConfig.messages.clear.isNotEmpty() || clearConfig.sounds.clear != null)) {
             for (player in server.playerList.players.filter { shouldInform(it) }) {
                 for (line in clearConfig.messages.clear) {
-                    player.sendMessage(
-                        Utils.deserializeText(
-                            line.replace("%clear_time%".toRegex(), Utils.getFormattedTime(clearConfig.interval.toLong()))
-                                .replace("%clear_amount%".toRegex(), total.toString())
-                                .replace("%clear_amount_items%".toRegex(), itemsCleared.toString())
-                                .replace("%clear_amount_pokemon%".toRegex(), pokemonCleared.toString())
-                                .replace("%clear_amount_entities%".toRegex(), entitiesCleared.toString())
-                        )
-                    )
+                    player.sendMessage(Utils.deserializeText(parsePlaceholders(line, total, totals)))
                 }
                 if (clearConfig.sounds.clear != null && clearConfig.sounds.clear.sound.isNotEmpty()) {
                     player.playNotifySound(
@@ -124,7 +74,7 @@ class ClearTask(
         }
     }
 
-    private fun getDimensions(server: MinecraftServer): List<ServerLevel> {
+    private fun getLevels(server: MinecraftServer): List<ServerLevel> {
         if (dimensions != null) return dimensions!!
         var newDimensions = mutableListOf<ServerLevel>()
         for (level in server.allLevels) {
@@ -148,5 +98,17 @@ class ClearTask(
 
     fun resetTimer() {
         timer = clearConfig.interval
+    }
+
+    private fun parsePlaceholders(string: String, total: Int, cleared: Map<Clearable<*>, Int>): String {
+        var parsed = string
+            .replace("%clear_time%".toRegex(), Utils.getFormattedTime(clearConfig.interval.toLong()))
+            .replace("%clear_amount%".toRegex(), total.toString())
+
+        cleared.forEach { (clearable, amount) ->
+            parsed = clearable.parse(parsed, amount)
+        }
+
+        return parsed
     }
 }

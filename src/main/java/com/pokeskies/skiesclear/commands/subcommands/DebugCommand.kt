@@ -2,7 +2,6 @@ package com.pokeskies.skiesclear.commands.subcommands
 
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.LiteralCommandNode
-import com.pokeskies.skiesclear.SkiesClear
 import com.pokeskies.skiesclear.config.ConfigManager
 import com.pokeskies.skiesclear.utils.SubCommand
 import me.lucko.fabric.api.permissions.v0.Permissions
@@ -23,7 +22,7 @@ class DebugCommand : SubCommand {
         fun debug(ctx: CommandContext<CommandSourceStack>): Int {
             val newMode = !ConfigManager.CONFIG.debug
             ConfigManager.CONFIG.debug = newMode
-            SkiesClear.INSTANCE.saveFile("config.json", ConfigManager.CONFIG)
+            ConfigManager.saveFile("config.json", ConfigManager.CONFIG)
 
             if (newMode) {
                 ctx.source.sendMessage(Component.text("Debug mode has been enabled!").color(NamedTextColor.GREEN))
