@@ -14,6 +14,16 @@ class EntityClearable(
     blacklist: List<String> = emptyList(),
     whitelist: List<String> = emptyList()
 ): Clearable<Entity>(enabled, blacklist, whitelist) {
+    @Transient
+    private lateinit var blacklistedTags: List<String>
+    @Transient
+    private lateinit var whitelistedTags: List<String>
+
+    override fun initialize() {
+        blacklistedTags = generateTags(blacklist)
+        whitelistedTags = generateTags(whitelist)
+    }
+
     override fun getResourceLocation(entity: Entity): ResourceLocation {
         return BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
     }
@@ -36,6 +46,44 @@ class EntityClearable(
             }
         }
         return removalCount
+    }
+
+    override fun isBlacklisted(entity: Entity, id: ResourceLocation): Boolean {
+        // Tag matching
+        if (blacklistedTags.isNotEmpty()) {
+            if (entity.tags.isNotEmpty()) {
+                if (entity.tags.stream().anyMatch { pokemonTag: String ->
+                        blacklistedTags.contains(pokemonTag)
+                    }) return true
+            }
+        }
+
+        return super.isBlacklisted(entity, id)
+    }
+
+    override fun isWhitelisted(entity: Entity, id: ResourceLocation): Boolean {
+        // Tag matching
+        if (whitelistedTags.isNotEmpty()) {
+            if (entity.tags.isNotEmpty()) {
+                if (entity.tags.stream().anyMatch { pokemonTag: String ->
+                        whitelistedTags.contains(pokemonTag)
+                    }) return true
+            }
+        }
+
+        return super.isWhitelisted(entity, id)
+    }
+
+    private fun generateTags(list: List<String>): List<String> {
+        val newTags = mutableListOf<String>()
+        for (entry in list) {
+            if (entry.startsWith("#tag=", true)) {
+                // split the entry string at the FIRST = occurrence
+                val split = entry.split("=", ignoreCase = true, limit = 2)
+                if (split.size == 2) newTags.add(split[1])
+            }
+        }
+        return newTags
     }
 
     override fun getPlaceholder(): String {

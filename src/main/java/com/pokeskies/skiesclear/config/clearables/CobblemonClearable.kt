@@ -17,10 +17,16 @@ class CobblemonClearable(
     private lateinit var blacklistedAspects: List<String>
     @Transient
     private lateinit var whitelistedAspects: List<String>
+    @Transient
+    private lateinit var blacklistedTags: List<String>
+    @Transient
+    private lateinit var whitelistedTags: List<String>
 
     override fun initialize() {
         blacklistedAspects = generateAspects(blacklist)
         whitelistedAspects = generateAspects(whitelist)
+        blacklistedTags = generateTags(blacklist)
+        whitelistedTags = generateTags(whitelist)
     }
 
     override fun getResourceLocation(entity: PokemonEntity): ResourceLocation {
@@ -73,6 +79,15 @@ class CobblemonClearable(
             }
         }
 
+        // Tag matching
+        if (blacklistedTags.isNotEmpty()) {
+            if (entity.tags.isNotEmpty()) {
+                if (entity.tags.stream().anyMatch { pokemonTag: String ->
+                        blacklistedTags.contains(pokemonTag)
+                    }) return true
+            }
+        }
+
         return false
     }
 
@@ -101,6 +116,16 @@ class CobblemonClearable(
                     }) return true
             }
         }
+
+        // Tag matching
+        if (whitelistedTags.isNotEmpty()) {
+            if (entity.tags.isNotEmpty()) {
+                if (entity.tags.stream().anyMatch { pokemonTag: String ->
+                        whitelistedTags.contains(pokemonTag)
+                    }) return true
+            }
+        }
+
         return false
     }
 
@@ -118,6 +143,18 @@ class CobblemonClearable(
             }
         }
         return newAspects
+    }
+
+    private fun generateTags(list: List<String>): List<String> {
+        val newTags = mutableListOf<String>()
+        for (entry in list) {
+            if (entry.startsWith("#tag=", true)) {
+                // split the entry string at the FIRST = occurrence
+                val split = entry.split("=", ignoreCase = true, limit = 2)
+                if (split.size == 2) newTags.add(split[1])
+            }
+        }
+        return newTags
     }
 
     override fun toString(): String {
