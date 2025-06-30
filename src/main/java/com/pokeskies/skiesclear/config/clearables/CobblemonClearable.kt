@@ -59,6 +59,7 @@ class CobblemonClearable(
         if (entity.isBattling && blacklist.contains("#battling")) return true
         if (pokemon.shiny && blacklist.contains("#shiny")) return true
         if (pokemon.isLegendary() && blacklist.contains("#legendary")) return true
+        if (pokemon.isMythical() && blacklist.contains("#mythical")) return true
         if (pokemon.isUltraBeast() && blacklist.contains("#ultrabeast")) return true
         if (entity.isBusy && blacklist.contains("#busy")) return true
         if (entity.isUncatchable() && blacklist.contains("#uncatchable")) return true
@@ -97,6 +98,7 @@ class CobblemonClearable(
         if (entity.isBattling && whitelist.contains("#battling")) return true
         if (pokemon.shiny && whitelist.contains("#shiny")) return true
         if (pokemon.isLegendary() && whitelist.contains("#legendary")) return true
+        if (pokemon.isMythical() && whitelist.contains("#mythical")) return true
         if (pokemon.isUltraBeast() && whitelist.contains("#ultrabeast")) return true
         if (entity.isBusy && blacklist.contains("#busy")) return true
         if (entity.isUncatchable() && blacklist.contains("#uncatchable")) return true
