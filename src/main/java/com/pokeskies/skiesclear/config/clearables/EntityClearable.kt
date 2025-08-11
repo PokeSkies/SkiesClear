@@ -7,6 +7,7 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.Mob
+import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.entity.EntityTypeTest
 
 class EntityClearable(
@@ -34,6 +35,7 @@ class EntityClearable(
         for (level in levels) {
             try {
                 val entities = level.getEntities(EntityTypeTest.forClass(Entity::class.java)) { true }.filter { entity ->
+                    if (entity is Player) return@filter false
                     if (entity is Mob && entity.isPersistenceRequired && !clearConfig.clearPersistent) return@filter false
                     if (entity.hasCustomName() && !clearConfig.clearNamed) return@filter false
                     return@filter shouldClear(entity)
