@@ -18,6 +18,8 @@ class ClearConfig(
     val clearPersistent: Boolean = false,
     @SerializedName("clear_named")
     val clearNamed: Boolean = false,
+    @SerializedName("clear_passengers")
+    val clearPassengers: Boolean = true,
     @SerializedName("inform_dimensions_only")
     val informDimensionsOnly: Boolean = true
 ) {

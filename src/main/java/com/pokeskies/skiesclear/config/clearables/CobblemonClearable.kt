@@ -41,6 +41,7 @@ class CobblemonClearable(
                 val entities = level.getEntities(EntityTypeTest.forClass(PokemonEntity::class.java)) { true }.filter { entity ->
                     if (entity.isPersistenceRequired && !clearConfig.clearPersistent) return@filter false
                     if (entity.hasCustomName() && !clearConfig.clearNamed) return@filter false
+                    if (entity.isPassenger && !clearConfig.clearPassengers) return@filter false
                     return@filter shouldClear(entity)
                 }
                 entities.forEach { entity -> entity.remove(Entity.RemovalReason.KILLED) }

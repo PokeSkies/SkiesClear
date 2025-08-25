@@ -25,6 +25,7 @@ class ItemClearable(
             try {
                 val entities = level.getEntities(EntityTypeTest.forClass(ItemEntity::class.java)) { true }.filter { entity ->
                     if (entity.hasCustomName() && !clearConfig.clearNamed) return@filter false
+                    if (entity.isPassenger && !clearConfig.clearPassengers) return@filter false
                     return@filter shouldClear(entity)
                 }
                 entities.forEach { entity -> entity.remove(Entity.RemovalReason.KILLED) }

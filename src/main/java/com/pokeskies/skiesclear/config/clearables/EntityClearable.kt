@@ -38,6 +38,7 @@ class EntityClearable(
                     if (entity is Player) return@filter false
                     if (entity is Mob && entity.isPersistenceRequired && !clearConfig.clearPersistent) return@filter false
                     if (entity.hasCustomName() && !clearConfig.clearNamed) return@filter false
+                    if (entity.isPassenger && !clearConfig.clearPassengers) return@filter false
                     return@filter shouldClear(entity)
                 }
                 entities.forEach { entity -> entity.remove(Entity.RemovalReason.KILLED) }
@@ -54,8 +55,8 @@ class EntityClearable(
         // Tag matching
         if (blacklistedTags.isNotEmpty()) {
             if (entity.tags.isNotEmpty()) {
-                if (entity.tags.stream().anyMatch { pokemonTag: String ->
-                        blacklistedTags.contains(pokemonTag)
+                if (entity.tags.stream().anyMatch { tag: String ->
+                        blacklistedTags.contains(tag)
                     }) return true
             }
         }
