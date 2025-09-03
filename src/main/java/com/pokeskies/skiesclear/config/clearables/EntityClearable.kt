@@ -1,8 +1,11 @@
 package com.pokeskies.skiesclear.config.clearables
 
+import com.pokeskies.skiesclear.SkiesClear
 import com.pokeskies.skiesclear.config.ClearConfig
 import com.pokeskies.skiesclear.utils.Utils
+import net.minecraft.advancements.critereon.NbtPredicate
 import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.Entity
@@ -18,11 +21,17 @@ class EntityClearable(
     @Transient
     private lateinit var blacklistedTags: List<String>
     @Transient
+    private lateinit var blacklistedNbt: List<CompoundTag>
+    @Transient
     private lateinit var whitelistedTags: List<String>
+    @Transient
+    private lateinit var whitelistedNbt: List<CompoundTag>
 
     override fun initialize() {
         blacklistedTags = generateTags(blacklist)
         whitelistedTags = generateTags(whitelist)
+        blacklistedNbt = generateNBT(blacklist)
+        whitelistedNbt = generateNBT(whitelist)
     }
 
     override fun getResourceLocation(entity: Entity): ResourceLocation {
@@ -61,6 +70,29 @@ class EntityClearable(
             }
         }
 
+        if (blacklistedNbt.isNotEmpty()) {
+            val nbt = NbtPredicate.getEntityTagToCompare(entity)
+            var passes = false
+            for (entry in blacklistedNbt) {
+                if (passes) break
+                entry.allKeys.forEach { key ->
+                    if (!nbt.contains(key)) {
+                        return@forEach
+                    }
+                    val tag = entry.get(key)
+                    val entityTag = nbt.get(key)
+
+                    if (tag != entityTag) {
+                        return@forEach
+                    }
+
+                    passes = true
+                }
+            }
+
+            if (passes) return true
+        }
+
         return super.isBlacklisted(entity, id)
     }
 
@@ -74,6 +106,29 @@ class EntityClearable(
             }
         }
 
+        if (whitelistedNbt.isNotEmpty()) {
+            val nbt = NbtPredicate.getEntityTagToCompare(entity)
+            var passes = false
+            for (entry in whitelistedNbt) {
+                if (passes) break
+                entry.allKeys.forEach { key ->
+                    if (!nbt.contains(key)) {
+                        return@forEach
+                    }
+                    val tag = entry.get(key)
+                    val entityTag = nbt.get(key)
+
+                    if (tag != entityTag) {
+                        return@forEach
+                    }
+
+                    passes = true
+                }
+            }
+
+            if (passes) return true
+        }
+
         return super.isWhitelisted(entity, id)
     }
 
@@ -84,6 +139,20 @@ class EntityClearable(
                 // split the entry string at the FIRST = occurrence
                 val split = entry.split("=", ignoreCase = true, limit = 2)
                 if (split.size == 2) newTags.add(split[1])
+            }
+        }
+        return newTags
+    }
+
+    private fun generateNBT(list: List<String>): List<CompoundTag> {
+        val newTags = mutableListOf<CompoundTag>()
+        for (entry in list) {
+            if (entry.startsWith("#nbt=", true)) {
+                // split the entry string at the FIRST = occurrence
+                val split = entry.split("=", ignoreCase = true, limit = 2)
+                if (split.size == 2) {
+                    newTags.add(SkiesClear.INSTANCE.gson.fromJson(split[1], CompoundTag::class.java))
+                }
             }
         }
         return newTags

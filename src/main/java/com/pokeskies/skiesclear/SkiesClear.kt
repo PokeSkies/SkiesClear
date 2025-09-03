@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.pokeskies.skiesclear.commands.BaseCommand
 import com.pokeskies.skiesclear.config.ConfigManager
+import com.pokeskies.skiesclear.utils.CompoundTagAdaptor
 import com.pokeskies.skiesclear.utils.Utils
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
@@ -13,6 +14,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.ServerSt
 import net.fabricmc.loader.api.FabricLoader
 import net.kyori.adventure.platform.fabric.FabricServerAudiences
 import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
 import net.minecraft.sounds.SoundEvent
@@ -39,6 +41,7 @@ class SkiesClear : ModInitializer {
     var gson: Gson = GsonBuilder().disableHtmlEscaping()
         .registerTypeAdapter(ResourceLocation::class.java, Utils.ResourceLocationSerializer())
         .registerTypeHierarchyAdapter(SoundEvent::class.java, Utils.RegistrySerializer(BuiltInRegistries.SOUND_EVENT))
+        .registerTypeAdapter(CompoundTag::class.java, CompoundTagAdaptor())
         .create()
 
     var gsonPretty: Gson = gson.newBuilder().setPrettyPrinting().create()
