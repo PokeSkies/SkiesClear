@@ -56,7 +56,7 @@ class CobblemonClearable(
 
     override fun isBlacklisted(entity: PokemonEntity, id: ResourceLocation): Boolean {
         val pokemon = entity.pokemon
-        if (pokemon.isPlayerOwned() && blacklist.contains("#owned")) return true
+        if ((pokemon.isPlayerOwned() || pokemon.isNPCOwned()) && blacklist.contains("#owned")) return true
         if (entity.isBattling && blacklist.contains("#battling")) return true
         if (pokemon.shiny && blacklist.contains("#shiny")) return true
         if (pokemon.isLegendary() && blacklist.contains("#legendary")) return true
@@ -95,7 +95,7 @@ class CobblemonClearable(
 
     override fun isWhitelisted(entity: PokemonEntity, id: ResourceLocation): Boolean {
         val pokemon = entity.pokemon
-        if (pokemon.isPlayerOwned() && whitelist.contains("#owned")) return true
+        if ((pokemon.isPlayerOwned() || pokemon.isNPCOwned()) && whitelist.contains("#owned")) return true
         if (entity.isBattling && whitelist.contains("#battling")) return true
         if (pokemon.shiny && whitelist.contains("#shiny")) return true
         if (pokemon.isLegendary() && whitelist.contains("#legendary")) return true
