@@ -58,13 +58,15 @@ dependencies {
     modImplementation("net.fabricmc:fabric-language-kotlin:${project.properties["fabric_kotlin_version"].toString()}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${project.properties["fabric_version"].toString()}")
 
-    modImplementation("com.cobblemon:fabric:1.6.1+1.21.1")
-
     // Adventure Text!
     modImplementation(include("net.kyori:adventure-platform-fabric:5.14.2")!!)
 
     // PermissionsAPI
-    modImplementation("me.lucko:fabric-permissions-api:0.3.1")
+    modImplementation("me.lucko:fabric-permissions-api:0.3.1")?.let {
+        include(it)
+    }
+
+    modImplementation("com.cobblemon:fabric:1.6.1+1.21.1")
 
     modImplementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 }
